@@ -12,7 +12,11 @@
         </div>
         <div class="form-group">
         <label for="inputText" class="sr-only">Короткое содержание</label>
-        <textarea name="short_text" class="form-control" required>{{$post->description}} </textarea>
+        <textarea name="short_text" class="form-control" required>{{$post->short_text}} </textarea>
+        </div>
+        <div class="form-group">
+        <label for="inputText" class="sr-only">Полное содержание</label>
+        <textarea name="full_text" class="form-control" required>{{$post->full_text}} </textarea>
         </div>
        <div class="form-group">
         <label for="inputText" class="sr-only">Категория</label>

@@ -74,11 +74,15 @@ class PostController extends Controller
     }
     
     public function update(Request $request, $id){
+         $categorya = CategoryArticles::where('article_id', $id)->first();
          $post = Post::find($id);
          $post->title = $request->input('title');
          $post->short_text = $request->input('short_text');
-         $post->full_text = $request->input('full_text');         
+         $post->full_text = $request->input('full_text');    
+         $post->active = $request->has('active') ? 1 : 0;
+         $categorya->category_id = $request->input('cat');
          $post->save();
+         $categorya->save();
          return redirect('/post/'.$id);
     }
     
