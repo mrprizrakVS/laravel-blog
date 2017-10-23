@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\User;
+use App\Entities\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -27,7 +28,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/my/account';
 
     /**
      * Create a new controller instance.
@@ -37,6 +38,29 @@ class RegisterController extends Controller
     public function __construct()
     {
         $this->middleware('guest');
+    }
+      public function register(Request $request)
+    {
+      try{
+        $this->validator($request->all())->validate();
+      } catch(\Exception $e){
+          dd('Что-то пошло не так');
+      }
+      
+      $email = $request->input('email');
+      $password = $request->input('password');
+      $isAuth = $request->has('remember') ? true : false;
+      $objUser = $this->create(['email' => $email, 'password' => $password]);
+      if(!($objUser instanceof User)){
+             // throw new Exception("Error create object User");
+              return back()->with('error', "Error create object User");
+          }
+      if($isAuth){          
+           $this->guard()->login($objUser);
+      }
+
+
+        return redirect(route('account'))->with('success', "Welcome it is true Auth");
     }
 
     /**
@@ -48,7 +72,6 @@ class RegisterController extends Controller
     protected function validator(array $data)
     {
         return Validator::make($data, [
-            'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6|confirmed',
         ]);
@@ -63,7 +86,6 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
             'email' => $data['email'],
             'password' => bcrypt($data['password']),
         ]);
